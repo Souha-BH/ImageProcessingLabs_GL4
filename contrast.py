@@ -1,14 +1,55 @@
-def change_contrast(data,graylevel):
-    #look for min and max values
-    min=0
-    max=0
-    for i in range(len(data)):
-        if data[i]<=min:
-            min=data[i]
-        if data[i]>=max:
-            max=data[i]   
-    new_data=data.copy()
-    for j in range(len(data)):
-        new_data[j]=(graylevel*(data[j]-min))/(max-min)
-    return new_data
-    
+import settings as s
+import stats
+from utils import clone
+
+
+def equalization(image):
+    cum_hist = stats.cumulated_histogram(image)
+    LUT = [0] * (s.graylevel + 1)
+    for g in range(s.graylevel + 1):
+        LUT[g] = int(s.graylevel * cum_hist[g] / stats.nbPixels())
+    new_image = clone(image)
+    for h in range(s.height):
+        for w in range(s.width):
+            new_image[h][w] = LUT[image[h][w]]
+    return new_image
+
+
+def linear_transformation(image, points):
+    LUT = [0] * (s.graylevel + 1)
+    for p in range(1, len(points)):
+        slope = (points[p][1] - points[p - 1][1]) / (points[p][0] - points[p - 1][0])
+        intercept = points[p][1] - slope * points[p][0]
+        for g in range(points[p - 1][0], points[p][0] + 1):
+            LUT[g] = int(slope * g + intercept)
+    new_image = clone(image)
+    for h in range(s.height):
+        for w in range(s.width):
+            new_image[h][w] = LUT[new_image[h][w]]
+    return new_image
+
+
+def dark_dilatation(image):
+    points = [
+        [0, 0],
+        [int(s.graylevel / 4), int(s.graylevel / 2)],
+        [s.graylevel, s.graylevel]
+    ]
+    return linear_transformation(image, points)
+
+
+def inverse(image):
+    points = [
+        [0, s.graylevel],
+        [s.graylevel, 0]
+    ]
+    return linear_transformation(image, points)
+
+
+def light_dilatation(image):
+    points = [
+        [0, 0],
+        [int(s.graylevel / 2), int(s.graylevel / 4)],
+        [s.graylevel, s.graylevel]
+    ]
+    return linear_transformation(image, points)
