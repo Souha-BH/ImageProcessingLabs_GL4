@@ -1,6 +1,6 @@
-import settings as s
-import utils
-
+import VariablesGlobales as s
+import Outils
+import math
 
 def read(filepath):
     type = readType(filepath)
@@ -14,7 +14,7 @@ def read(filepath):
         raise Exception
     else:
         s.isread = True
-        s.image_orig = utils.arrayToMatrix(imageread, s.width, s.height)
+        s.image_orig = Outils.arrayToMatrix(imageread, s.width, s.height)
 
 
 def readType(filepath):
@@ -70,7 +70,7 @@ def readPGMbinary(filepath):
 
 
 def write(filepath, image):
-    data = utils.matrixToArray(image, s.height, s.width)
+    data = Outils.matrixToArray(image, s.height, s.width)
     writePGM(filepath, data)
 
 
@@ -87,3 +87,43 @@ def writePGM(filepath, image):
         if ((num + 1) % s.width == 0):
             file.write("\n")
     file.close()
+
+
+
+def nbPixels():
+    return s.width * s.height
+
+
+def average(image):
+    avg = 0
+    for h in range(s.height):
+        for w in range(s.width):
+            avg += image[h][w]
+    return avg / nbPixels()
+
+
+def deviation(image):
+    avg = average(image)
+    dev = 0
+    for h in range(s.height):
+        for w in range(s.width):
+            dev += (image[h][w] - avg) ** 2
+    return math.sqrt(dev / nbPixels())
+
+
+def histogram(image):
+    hist = [0] * (s.graylevel + 1)
+    for h in range(s.height):
+        for w in range(s.width):
+            hist[image[h][w]] += 1
+    return hist
+
+
+def cumulated_histogram(image):
+    hist = histogram(image)
+    cum_hist = [0] * (s.graylevel + 1)
+    cum_hist[0] = hist[0]
+    for g in range(1, s.graylevel + 1):
+        cum_hist[g] = hist[g] + cum_hist[g - 1]
+    return cum_hist
+

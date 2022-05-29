@@ -1,10 +1,9 @@
-import settings as s
-import filters as f
-import imageIO as io
-import contrast as c
-import stats as st
-import binary as b
-import utils as u
+import VariablesGlobales as s
+import TP3 as f
+import TP1 as io
+import TP2 as c
+import TP4 as b
+import Outils as u
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -12,15 +11,12 @@ from matplotlib.figure import Figure
 import tkinter as tk
 from tkinter import ttk
 
-import utils
-
 matplotlib.use('TkAgg')
 
 
 class Interface:
     def __init__(self, window):
         self.window = window
-        self.window.iconphoto(False, tk.PhotoImage(file='icons/imgicn.png'))
         self.window.title('Traitement Images GL4')
         self.menu_initialisation()
         self.window.geometry(f'{self.window.winfo_screenwidth() - 100}x{self.window.winfo_screenheight() - 100}+10+10')
@@ -63,12 +59,12 @@ class Interface:
         Frametools.pack_propagate(0)
         Frametools.pack(anchor=tk.W, side=tk.LEFT, fill=tk.Y, expand=tk.YES)
 
-        FrameFile = tk.Frame(Frametools, height=100, width=100, pady=5)
+        FrameFile = tk.Frame(Frametools, height=100, width=80, pady=5)
         tk.Label(FrameFile, text="Image:").grid(row=0, column=0, padx=2)
         self.entry_text = tk.StringVar()
         self.entry_text.set("input/mona.pgm")
         
-        Frameopensave = tk.Frame(Frametools, height=100, width=100, pady=5)
+        Frameopensave = tk.Frame(Frametools, height=100, width=80, pady=5)
         tk.Button(Frameopensave, text="Voir", padx=10, pady=5, command=self.openButton_callback).grid(row=0, column=0,
                                                                                                       padx=10)
      
@@ -76,28 +72,11 @@ class Interface:
         FrameFile.pack(anchor=tk.NW)
         Frameopensave.pack(anchor=tk.NE)
         
-        tk.Button(Frameopensave, text="Enregistrer", padx=10, pady=5, command=self.saveButton_callback).grid(row=0, column=1,
-                                                                                                      padx=10)
-        self.original_button = tk.Button(Frameopensave, text="Originale", state=tk.DISABLED, padx=10, pady=5,
-                                         command=self.originalButton_callback)
-        self.original_button.grid(row=0, column=2, padx=10)
         self.undo_button = tk.Button(Frameopensave, text="Annuler", state=tk.DISABLED, padx=10, pady=5,
                                          command=self.undoButton_callback)
         self.undo_button.grid(row=0, column=3, padx=10)
         Frameopensave.pack(anchor=tk.NW)
 
-        Framesize = tk.Frame(Frametools, height=100, width=100, pady=5)
-        tk.Label(Framesize, text="Taille des filtres et des opérations binaires: ").grid(row=0, column=0,
-                                                                                                   padx=10)
-        self.size_num = tk.Spinbox(Framesize, width=3, from_=3, to=29, increment=2)
-        self.size_num.grid(row=0, column=2)
-        Framesize.pack(anchor=tk.NW)
-
-        Framethreshold = tk.Frame(Frametools, height=100, width=100, pady=5)
-        tk.Label(Framethreshold, text="Valeur du seuillage manuel: ").grid(row=0, column=0, padx=10)
-        self.thresh_slider = tk.Scale(Framethreshold, from_=0, to=0,length=150,tickinterval=0, orient=tk.HORIZONTAL)
-        self.thresh_slider.grid(row=0, column=2)
-        Framethreshold.pack(anchor=tk.NW)
         Framewidth = tk.Frame(Frametools, height=100, width=100, pady=5)
         tk.Label(Framewidth, text="Largeur:").grid(row=0, column=0, padx=10)
         self.width_text = tk.Label(Framewidth, text="0", width=15, relief=tk.SUNKEN)
@@ -125,24 +104,33 @@ class Interface:
         Frameaverage.pack(anchor=tk.NW)
 
         Framedeviation = tk.Frame(Frametools, height=100, width=100, pady=5)
-        tk.Label(Framedeviation, text="Déviation:").grid(row=0, column=0, padx=10)
+        tk.Label(Framedeviation, text="Ecart-type:").grid(row=0, column=0, padx=10)
         self.deviation_text = tk.Label(Framedeviation, text="0", width=25, relief=tk.SUNKEN)
         self.deviation_text.grid(row=0, column=2)
         Framedeviation.pack(anchor=tk.NW)
-
-        Frameentropy = tk.Frame(Frametools, height=100, width=100, pady=5)
-        tk.Label(Frameentropy, text="Entropie:").grid(row=0, column=0, padx=10)
-        self.entropy_text = tk.Label(Frameentropy, text="0", width=25, relief=tk.SUNKEN)
-        self.entropy_text.grid(row=0, column=2)
-        Frameentropy.pack(anchor=tk.NW)
 
         FrameSNR = tk.Frame(Frametools, height=100, width=100, pady=5)
         tk.Label(FrameSNR, text="SNR:").grid(row=0, column=0, padx=10)
         self.SNR_text = tk.Label(FrameSNR, text="0", width=25, relief=tk.SUNKEN)
         self.SNR_text.grid(row=0, column=2)
         FrameSNR.pack(anchor=tk.NW)
+        
+        
+        Framesize = tk.Frame(Frametools, height=100, width=100, pady=5)
+        tk.Label(Framesize, text="Taille des filtres et des opérations binaires: ").grid(row=0, column=0,padx=10)
+        self.size_num = tk.Spinbox(Framesize, width=3, from_=3, to=29, increment=2)
+        self.size_num.grid(row=0, column=2)
+        Framesize.pack(anchor=tk.NW)
 
-        FrameHistogram = tk.Frame(Frametools, width=self.window.winfo_screenwidth() * 0.3, height=300, pady=5)
+        Framethreshold = tk.Frame(Frametools, height=100, width=100, pady=5)
+        tk.Label(Framethreshold, text="Valeur du seuillage manuel: ").grid(row=0, column=0, padx=10)
+        self.thresh_slider = tk.Scale(Framethreshold, from_=0, to=0,length=150,tickinterval=0, orient=tk.HORIZONTAL)
+        self.thresh_slider.grid(row=0, column=2)
+        Framethreshold.pack(anchor=tk.NW)
+        
+      
+        FrameHistogram = tk.Frame(self.window, width=self.window.winfo_screenwidth() * 0.3)
+        FrameHistogram.pack(anchor=tk.W, side=tk.LEFT, fill=tk.Y, expand=tk.YES)
         tk.Label(FrameHistogram, text="Histogramme:").pack(padx=10)
         self.fig2 = Figure(figsize=(5, 5), dpi=100)
         self.ax2 = self.fig2.add_subplot(111)
@@ -150,29 +138,31 @@ class Interface:
         self.fig2.tight_layout()
         canvas2 = FigureCanvasTkAgg(self.fig2, FrameHistogram)
         plot_widget2 = canvas2.get_tk_widget()
-        plot_widget2.config(width=self.window.winfo_screenwidth() * 0.3, height=300)
+        plot_widget2.config(width=self.window.winfo_screenwidth() * 0.3, height=600)
         plot_widget2.pack(expand=tk.YES, anchor=tk.CENTER, pady=5, padx=5)
         FrameHistogram.pack_propagate(True)
         FrameHistogram.pack(anchor=tk.NW)
 
-        self.imageframe = tk.Frame(self.window, width=self.window.winfo_screenwidth() * 0.7)
+        self.imageframe = tk.Frame(self.window, width=self.window.winfo_screenwidth() * 0.3)
+        tk.Label(self.imageframe, text="Image:").pack(padx=10)
         self.imageframe.pack_propagate(False)
-        self.imageframe.pack(side=tk.RIGHT, fill=tk.Y)
+        self.imageframe.pack(anchor=tk.E,side=tk.RIGHT, fill=tk.Y, expand=tk.YES)
         self.fig1 = Figure(figsize=(6, 5), dpi=100)
         self.ax1 = self.fig1.add_subplot((111))
         canvas1 = FigureCanvasTkAgg(self.fig1, self.imageframe)
         plot_widget = canvas1.get_tk_widget()
-        plot_widget.config(width=self.window.winfo_screenwidth() * 0.7, height=self.window.winfo_screenheight())
-        plot_widget.pack(expand=tk.YES, anchor=tk.CENTER, pady=20, padx=20)
+        plot_widget.config(width=self.window.winfo_screenwidth() * 0.3, height=600)
+        plot_widget.pack(expand=tk.YES, anchor=tk.CENTER, pady=5, padx=5)
+        self.imageframe.pack_propagate(True)
+        self.imageframe.pack(anchor=tk.NW)
 
     def updateStats(self):
         self.width_text.config(text=str(s.width))
         self.height_text.config(text=str(s.height))
-        self.pixel_text.config(text=str(st.nbPixels()))
-        self.average_text.config(text=str(st.average(self.currentimage)))
-        self.deviation_text.config(text=str(st.deviation(self.currentimage)))
-        self.entropy_text.config(text=str(st.entropy(self.currentimage)))
-        self.SNR_text.config(text=str(st.SNR(self.currentimage)))
+        self.pixel_text.config(text=str(io.nbPixels()))
+        self.average_text.config(text=str(io.average(self.currentimage)))
+        self.deviation_text.config(text=str(io.deviation(self.currentimage)))
+        self.SNR_text.config(text=str(f.SNR(self.currentimage)))
         self.displayHistogram()
         self.displayImage()
 
@@ -203,19 +193,6 @@ class Interface:
 
         except Exception:
             print("Exception")
-
-
-    def saveButton_callback(self):
-        io.write(self.entry_text.get(), self.currentimage)
-
-
-
-    def originalButton_callback(self):
-        self.previousimage = self.currentimage
-        self.undo_button.config(state=tk.NORMAL)
-        self.currentimage = s.image_orig.copy()
-        self.updateStats()
-
 
     def undoButton_callback(self):
         self.currentimage = self.previousimage
@@ -386,7 +363,7 @@ class Interface:
     def noise_callback(self):
         self.previousimage = self.currentimage
         self.undo_button.config(state=tk.NORMAL)
-        self.currentimage = utils.noise(self.currentimage, s.width, s.height, s.graylevel)
+        self.currentimage = f.noise(self.currentimage, s.width, s.height, s.graylevel)
         self.updateStats()
 
 

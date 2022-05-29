@@ -1,7 +1,7 @@
-import settings as s
-from utils import clone
-from stats import histogram
-from stats import cumulated_histogram
+import VariablesGlobales as s
+from Outils import clone
+from TP1 import histogram
+from TP1 import cumulated_histogram
 import math
 
 

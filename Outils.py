@@ -1,6 +1,3 @@
-import random
-
-
 def arrayToMatrix(Array, height, width):
     Matrix = []
     for w in range(width):
@@ -21,18 +18,6 @@ def matrixToArray(Matrix, height, width):
 
 def clone(Matrix):
     return [row[:] for row in Matrix]
-
-
-def noise(Matrix, width, height, val):
-    new_Matrix = clone(Matrix)
-    for h in range(height):
-        for w in range(width):
-            x = random.randint(0, 20)
-            if (x == 0):
-                new_Matrix[h][w] = 0
-            if (x == 20):
-                new_Matrix[h][w] = val
-    return new_Matrix
 
 
 def ascii(image, width, height):

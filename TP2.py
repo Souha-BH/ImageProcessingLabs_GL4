@@ -1,13 +1,14 @@
-import settings as s
-import stats
-from utils import clone
+from turtle import TPen
+import VariablesGlobales as s
+import TP1 as io
+from Outils import clone
 
 
 def equalization(image):
-    cum_hist = stats.cumulated_histogram(image)
+    cum_hist = io.cumulated_histogram(image)
     LUT = [0] * (s.graylevel + 1)
     for g in range(s.graylevel + 1):
-        LUT[g] = int(s.graylevel * cum_hist[g] / stats.nbPixels())
+        LUT[g] = int(s.graylevel * cum_hist[g] / io.nbPixels())
     new_image = clone(image)
     for h in range(s.height):
         for w in range(s.width):
