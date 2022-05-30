@@ -88,8 +88,6 @@ def writePGM(filepath, image):
             file.write("\n")
     file.close()
 
-
-
 def nbPixels():
     return s.width * s.height
 

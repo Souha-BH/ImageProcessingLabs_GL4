@@ -1,4 +1,3 @@
-from turtle import TPen
 import VariablesGlobales as s
 import TP1 as io
 from Outils import clone
@@ -31,26 +30,15 @@ def linear_transformation(image, points):
 
 
 def dark_dilatation(image):
-    points = [
-        [0, 0],
-        [int(s.graylevel / 4), int(s.graylevel / 2)],
-        [s.graylevel, s.graylevel]
-    ]
+    points = [[0, 0], [int(s.graylevel / 4), int(s.graylevel / 2)],[s.graylevel, s.graylevel]]
     return linear_transformation(image, points)
 
 
 def inverse(image):
-    points = [
-        [0, s.graylevel],
-        [s.graylevel, 0]
-    ]
+    points = [[0, s.graylevel],[s.graylevel, 0]]
     return linear_transformation(image, points)
 
 
 def light_dilatation(image):
-    points = [
-        [0, 0],
-        [int(s.graylevel / 2), int(s.graylevel / 4)],
-        [s.graylevel, s.graylevel]
-    ]
+    points = [[0, 0],[int(s.graylevel / 2), int(s.graylevel / 4)],[s.graylevel, s.graylevel]]
     return linear_transformation(image, points)
